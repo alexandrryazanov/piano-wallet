@@ -33,7 +33,7 @@ import { ethers, Wallet } from "ethers";
 
 // get wallet from mnemonicPhrase and passphrase
 // const mnemonicPhrase =
-//   "wasp pear burger volume ranch sell wish then join wise rely trial whale enact long bacon oppose heart adapt segment island quantum soup forum";
+//   "... enact long bacon oppose heart adapt segment island quantum soup forum";
 
 export async function sendTransaction(
   wallet: Wallet,
