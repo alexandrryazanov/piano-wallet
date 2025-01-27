@@ -4,6 +4,8 @@ import { encrypt } from "./crypt";
 import { generateMnemonic } from "bip39";
 import { ethers } from "ethers";
 
+// TODO add user interaction
+
 // Создаем новый объект Input для подключения к MIDI-устройствам
 const input = new midi.Input();
 
