@@ -1,8 +1,8 @@
 import midi from "midi";
 import { encryptedWords } from "./words";
-import { decrypt } from "./crypt";
+import { decrypt } from "./utils/crypt";
 import { ethers, JsonRpcProvider } from "ethers";
-import { sendTransaction } from "./wallet";
+import { sendTransaction } from "./utils/wallet";
 
 // Создаем новый объект Input для подключения к MIDI-устройствам
 const input = new midi.Input();
@@ -53,8 +53,8 @@ input.on("message", async (deltaTime, message) => {
     // try to send
     await sendTransaction(
       wallet,
-      "0xfbc38760DBF253E40A07cE64F1E06862Ba404D68",
-      "0.0001",
+      "0xe702f2765f26a7518c22209451edf731c2cb5ffc",
+      "0.0015",
     );
 
     process.exit();

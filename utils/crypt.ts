@@ -25,14 +25,3 @@ export function decrypt(encryptedText, key) {
   decrypted += decipher.final("utf8");
   return decrypted;
 }
-
-// Пример использования
-// const key = "837982374982347928374928479423948923483849384"; // Ваш ключ (может быть любой длины)
-//
-// const res: string[] = [];
-// for (const word of Object.values(words)) {
-//   const enc = encrypt(word, key);
-//   res.push(enc);
-// }
-//
-// console.log(res.map((w) => `"${w}"`).join(","));
