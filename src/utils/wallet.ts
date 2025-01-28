@@ -12,7 +12,7 @@ export const generateMelodyString = (keys: number[]) => keys.join("-");
 
 export function createWallet(melodyArray: number[]) {
   const melodyString = generateMelodyString(melodyArray);
-  const shuffledWords = shuffleArray(wordlists["EN"]).slice(0, TOTAL_WORDS - 1);
+  const shuffledWords = shuffleArray(wordlists["EN"]).slice(0, TOTAL_WORDS);
   const encryptedWords = shuffledWords.map((word) =>
     encrypt(word, melodyString),
   );
