@@ -1,5 +1,6 @@
 import midi from "midi";
 import { askQuestion } from "./io";
+import { styleText } from "node:util";
 
 export async function listenMelody() {
   // Создаем новый объект Input для подключения к MIDI-устройствам
@@ -17,7 +18,7 @@ export async function listenMelody() {
   // Подключение к первому устройству (0 — это индекс порта)
   input.openPort(0);
 
-  console.log("Устройство готово... Начните играть!");
+  console.log(styleText(["green"], "Устройство готово... Начните играть!"));
 
   const melodyArray: number[] = [];
   input.on("message", (deltaTime, message: number[]) => {
@@ -30,7 +31,7 @@ export async function listenMelody() {
     melodyArray.push(note);
   });
 
-  await askQuestion("Нажмите Enter, когда закончите...");
+  await askQuestion(styleText(["green"], "Нажмите Enter, когда закончите..."));
 
   if (melodyArray.length < 5) {
     console.log("Мелодия слишком короткая! Попробуйте еще раз...");

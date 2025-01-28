@@ -2,6 +2,7 @@ import { askChoice, askQuestion } from "./utils/io";
 import { getWalletsFromDir } from "./utils/files";
 import { attemptToCheckWallet, sendTransaction } from "./utils/wallet";
 import { JsonRpcProvider } from "ethers";
+import { styleText } from "node:util";
 
 async function send() {
   console.log("Вы собираетесь отправить средства!");
@@ -21,7 +22,10 @@ async function send() {
   );
   const wallet = (await attemptToCheckWallet(from)).connect(provider);
   const confirmTx = await askQuestion(
-    `Отправить ${value}ETH с кошелька ${from} на ${to}? y/(n)`,
+    styleText(
+      ["yellow"],
+      `Отправить ${value}ETH с кошелька ${from} на ${to}? y/(n)`,
+    ),
   );
   if (confirmTx.toLowerCase() === "y") {
     await sendTransaction(wallet, to, value);

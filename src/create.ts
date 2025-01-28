@@ -2,9 +2,16 @@ import { writeWordsToFile } from "./utils/files";
 import { askQuestion } from "./utils/io";
 import { attemptToCheckWallet, createWallet } from "./utils/wallet";
 import { listenMelody } from "./utils/midi";
+import { styleText } from "node:util";
 
 async function create() {
   console.log("Вы собираетесь создать новый кошелек!");
+  console.log(
+    styleText(
+      "red",
+      "‼️ВНИМАНИЕ: отключите все соединения (вкл. Режим полета)!",
+    ),
+  );
   let melodyArray = await listenMelody();
 
   const { words, address } = createWallet(melodyArray);
