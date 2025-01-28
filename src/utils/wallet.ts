@@ -83,6 +83,7 @@ export async function sendTransaction(
   to: string,
   ethValue: string,
 ) {
+  console.log(`Отсылаем ${ethValue}ETH на адрес ${to}...`);
   try {
     const txResponse = await wallet.sendTransaction({
       to, // Адрес получателя

@@ -24,16 +24,16 @@ export async function listenMelody() {
     const [command, note, velocity] = message;
     if (command !== 144 || velocity <= 0) return; // Если это не сообщение типа "Note On"
 
-    if (melodyArray.length === 0)
+    if (melodyArray.length === 0) {
       console.log("\n🎹 Сигнал поступает! Продолжайте играть...");
+    }
     melodyArray.push(note);
   });
 
   await askQuestion("Нажмите Enter, когда закончите...");
 
   if (melodyArray.length < 5) {
-    console.log("Мелодия слишком коротка! Попробуйте еще раз...");
-    melodyArray.length = 0;
+    console.log("Мелодия слишком короткая! Попробуйте еще раз...");
     return await listenMelody();
   }
 

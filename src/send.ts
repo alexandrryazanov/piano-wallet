@@ -6,16 +6,25 @@ import { JsonRpcProvider } from "ethers";
 async function send() {
   const wallets = await getWalletsFromDir();
   const walletNumber = await askChoice("Выберите кошелек:", wallets);
-  const address = wallets[walletNumber - 1];
+  const from = wallets[walletNumber - 1];
+  console.log(`Выбран кошелек ${from}`);
+
   const to = await askQuestion("Введите адрес получателя:");
+
   const value = await askQuestion(
     "Введите сумму перевода (дробную часть отделите точкой):",
   );
+
   const provider = new JsonRpcProvider(
     "https://mainnet.infura.io/v3/acef02994c93451fa2e5b39038e2af27",
   );
-  const wallet = (await attemptToCheckWallet(address)).connect(provider);
-  await sendTransaction(wallet, to, value);
+  const wallet = (await attemptToCheckWallet(from)).connect(provider);
+  const confirmTx = await askQuestion(
+    `Отправить ${value}ETH с кошелька ${from} на ${to}? y/(n)`,
+  );
+  if (confirmTx.toLowerCase() === "y") {
+    await sendTransaction(wallet, to, value);
+  }
 }
 
 send().then(() => process.exit());

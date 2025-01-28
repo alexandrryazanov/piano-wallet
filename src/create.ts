@@ -13,11 +13,9 @@ async function create() {
     "Хотите проверить доступ к кошельку? y/(n)",
   );
 
-  if (answerOnCheckWallet.toLowerCase() !== "y") {
-    process.exit();
+  if (answerOnCheckWallet.toLowerCase() === "y") {
+    await attemptToCheckWallet(address);
   }
-
-  await attemptToCheckWallet(address);
 }
 
 create().then(() => process.exit());
