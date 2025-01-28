@@ -1,8 +1,10 @@
 import * as fs from "fs/promises";
 
+const WALLETS_DIR = "wallets";
+
 export async function writeWordsToFile(words: string[], filename: string) {
   await fs.writeFile(
-    `./wallets/${filename}.json`,
+    `./${WALLETS_DIR}/${filename}.json`,
     JSON.stringify({ words }, null, 2),
     { flag: "wx", encoding: "utf8" },
   );
@@ -16,4 +18,9 @@ export async function getWordsFromFile(filename: string) {
   });
   const json = JSON.parse(data);
   return json.words as string[];
+}
+
+export async function getWalletsFromDir() {
+  const files = await fs.readdir(`./${WALLETS_DIR}`);
+  return files.map((f) => f.split(".")[0]);
 }

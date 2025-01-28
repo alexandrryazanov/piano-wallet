@@ -4,9 +4,10 @@ import { generateMnemonic, wordlists } from "bip39";
 import { decrypt, encrypt } from "./crypt";
 import { generateNumbers } from "./numbers";
 import { getWordsFromFile } from "./files";
-import { askQuestion } from "./io";
+import { listenMelody } from "./midi";
 
 const TOTAL_WORDS = 500;
+export const MNEMONIC_LENGTH = 24;
 
 export const generateMelodyString = (keys: number[]) => keys.join("-");
 
@@ -16,12 +17,12 @@ export function createWallet(melodyArray: number[]) {
   const encryptedWords = shuffledWords.map((word) =>
     encrypt(word, melodyString),
   );
-  const mnemonic = generateMnemonic(256); // 256 бит — это 24 слова
+  const mnemonic = generateMnemonic(256); // 256 бит = 24 слова (переворачиваем для безопасности)
   const mnemonicWords = mnemonic.split(" ");
   const wallet = ethers.Wallet.fromPhrase(mnemonic);
   const positions = generateNumbers(
     melodyString,
-    mnemonicWords.length,
+    MNEMONIC_LENGTH,
     0,
     TOTAL_WORDS - 1,
   );
@@ -40,7 +41,12 @@ export async function getWalletFromFile(
 ) {
   const words = await getWordsFromFile(filename);
   const melodyString = generateMelodyString(melodyArray);
-  const positions = generateNumbers(melodyString, 24, 0, TOTAL_WORDS - 1);
+  const positions = generateNumbers(
+    melodyString,
+    MNEMONIC_LENGTH,
+    0,
+    TOTAL_WORDS - 1,
+  );
   const mnemonic = positions
     .reduce<
       string[]
@@ -48,29 +54,28 @@ export async function getWalletFromFile(
     .join(" ");
 
   const node = ethers.Wallet.fromPhrase(mnemonic);
+  console.log("Доступ к кошельку разрешен!");
   return new Wallet(node.privateKey);
 }
 
 export async function checkWallet(address: string, melodyArray: number[]) {
-  const wallet = await getWalletFromFile(address, melodyArray);
-  if (wallet.address !== address) throw new Error("Check failed");
+  try {
+    const wallet = await getWalletFromFile(address, melodyArray);
+    if (wallet.address !== address) return null;
+    return wallet;
+  } catch (e) {
+    return null;
+  }
 }
 
-export async function attemptToCheckWallet(
-  walletAddress: string,
-  melodyArray: number[],
-) {
-  melodyArray.length = 0; // Очищаем массив мелодии
-
-  await askQuestion("Сыграйте ту же мелодию. Нажмите Enter по окончанию...");
-
-  try {
-    await checkWallet(walletAddress, melodyArray);
-    console.log("Проверка прошла успешно!");
-  } catch (e) {
+export async function attemptToCheckWallet(walletAddress: string) {
+  const melodyArray = await listenMelody();
+  const wallet = await checkWallet(walletAddress, melodyArray);
+  if (!wallet) {
     console.log("Проверка не удалась. Попробуйте еще!");
-    await attemptToCheckWallet(walletAddress, melodyArray);
+    return await attemptToCheckWallet(walletAddress);
   }
+  return wallet;
 }
 
 export async function sendTransaction(
@@ -78,16 +83,16 @@ export async function sendTransaction(
   to: string,
   ethValue: string,
 ) {
-  const tx = {
-    to, // Адрес получателя
-    value: ethers.parseEther(ethValue), // Сумма для перевода в эфире (разделена точкой)
-  };
-
   try {
-    const txResponse = await wallet.sendTransaction(tx);
-    console.log("Sent:", txResponse.hash);
+    const txResponse = await wallet.sendTransaction({
+      to, // Адрес получателя
+      value: ethers.parseEther(ethValue), // Сумма для перевода в эфире (разделена точкой)
+    });
+    console.log(
+      `Транзакция ${txResponse.hash} отправлена. Дождитесь завершения...`,
+    );
     await txResponse.wait();
-    console.log("Approved ✅");
+    console.log("Транзакция подтверждена ✅");
   } catch (error) {
     console.error("Ошибка при отправке транзакции:", error);
   }
