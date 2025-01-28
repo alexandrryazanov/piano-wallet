@@ -4,6 +4,7 @@ import { attemptToCheckWallet, sendTransaction } from "./utils/wallet";
 import { JsonRpcProvider } from "ethers";
 
 async function send() {
+  console.log("Вы собираетесь отправить средства!");
   const wallets = await getWalletsFromDir();
   const walletNumber = await askChoice("Выберите кошелек:", wallets);
   const from = wallets[walletNumber - 1];

@@ -4,6 +4,7 @@ import { attemptToCheckWallet, createWallet } from "./utils/wallet";
 import { listenMelody } from "./utils/midi";
 
 async function create() {
+  console.log("Вы собираетесь создать новый кошелек!");
   let melodyArray = await listenMelody();
 
   const { words, address } = createWallet(melodyArray);
