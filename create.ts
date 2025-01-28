@@ -19,20 +19,20 @@ async function app() {
   // Подключение к первому устройству (0 — это индекс порта)
   input.openPort(0);
 
-  console.log("Создание кошелька. Начни играть...");
+  console.log("💶 Создание кошелька. Начните играть...");
   const melodyArray: number[] = [];
 
   input.on("message", (deltaTime, message: number[]) => {
     const [command, note, velocity] = message;
     if (command !== 144 || velocity <= 0) return; // Если это не сообщение типа "Note On"
     if (melodyArray.length === 0) {
-      console.log("🎹 Сигнал поступает! Когда закончите нажмите Y.");
+      console.log("\n🎹 Сигнал поступает! Продолжайте играть...");
     }
     melodyArray.push(note);
   });
 
   const answerOnFinishCreatingMelody = await askQuestion(
-    "Нажми любую клавишу когда закончишь мелодию...",
+    "Нажмите любую букву и Enter, когда закончите мелодию...",
   );
 
   let walletAddress: string = "";
@@ -42,7 +42,7 @@ async function app() {
       process.exit(1);
     }
 
-    const { words, address } = await createWallet(melodyArray);
+    const { words, address } = createWallet(melodyArray);
     await writeWordsToFile(words, address);
     walletAddress = address;
   }
@@ -53,9 +53,10 @@ async function app() {
 
   if (answerOnCheckWallet.toLowerCase() !== "y") {
     process.exit();
-  } else {
-    await attemptToCheckWallet(walletAddress, melodyArray);
   }
+
+  await attemptToCheckWallet(walletAddress, melodyArray);
+  process.exit();
 }
 
 app();

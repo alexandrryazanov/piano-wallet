@@ -45,9 +45,7 @@ const TOTAL_WORDS = 500;
 
 export const generateMelodyString = (keys: number[]) => keys.join("-");
 
-export async function createWallet(melodyArray: number[]) {
-  console.log("Начали создавать кошелек из мелодии...");
-
+export function createWallet(melodyArray: number[]) {
   const melodyString = generateMelodyString(melodyArray);
   const shuffledWords = shuffleArray(wordlists["EN"]).slice(0, TOTAL_WORDS - 1);
   const encryptedWords = shuffledWords.map((word) =>
@@ -89,8 +87,8 @@ export async function getWalletFromFile(
 }
 
 export async function checkWallet(address: string, melodyArray: number[]) {
-  const wallet = await getWalletFromFile(address.substring(-4), melodyArray);
-  return wallet.address === address;
+  const wallet = await getWalletFromFile(address, melodyArray);
+  if (wallet.address !== address) throw new Error("Check failed");
 }
 
 export async function attemptToCheckWallet(
@@ -100,12 +98,17 @@ export async function attemptToCheckWallet(
   melodyArray.length = 0; // Очищаем массив мелодии
 
   const answerOnFinishCheckMelody = await askQuestion(
-    "Сыграйте ту же мелодию.Нажмите лююбую клавишу по окончанию...",
+    "Сыграйте ту же мелодию.Нажмите букву и Enter по окончанию...",
   );
 
   if (answerOnFinishCheckMelody) {
-    const isSuccess = await checkWallet(walletAddress, melodyArray);
-    if (isSuccess) await attemptToCheckWallet(walletAddress, melodyArray);
+    try {
+      await checkWallet(walletAddress, melodyArray);
+      console.log("Проверка прошла успешно!");
+    } catch (e) {
+      console.log("Проверка не удалась. Попробуйте еще!");
+      await attemptToCheckWallet(walletAddress, melodyArray);
+    }
   }
 }
 
