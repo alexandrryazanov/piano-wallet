@@ -1,4 +1,10 @@
 import { ethers, Wallet } from "ethers";
+import { shuffleArray } from "./lists";
+import { generateMnemonic, wordlists } from "bip39";
+import { decrypt, encrypt } from "./crypt";
+import { generateNumbers } from "./numbers";
+import { getWordsFromFile } from "./files";
+import { askQuestion } from "./io";
 
 // const passphrase = "your_passphrase_here";
 // import { generateMnemonic } from "bip39";
@@ -34,6 +40,74 @@ import { ethers, Wallet } from "ethers";
 // get wallet from mnemonicPhrase and passphrase
 // const mnemonicPhrase =
 //   "... enact long bacon oppose heart adapt segment island quantum soup forum";
+
+const TOTAL_WORDS = 500;
+
+export const generateMelodyString = (keys: number[]) => keys.join("-");
+
+export async function createWallet(melodyArray: number[]) {
+  console.log("Начали создавать кошелек из мелодии...");
+
+  const melodyString = generateMelodyString(melodyArray);
+  const shuffledWords = shuffleArray(wordlists["EN"]).slice(0, TOTAL_WORDS - 1);
+  const encryptedWords = shuffledWords.map((word) =>
+    encrypt(word, melodyString),
+  );
+  const mnemonic = generateMnemonic(256); // 256 бит — это 24 слова
+  const mnemonicWords = mnemonic.split(" ");
+  const wallet = ethers.Wallet.fromPhrase(mnemonic);
+  const positions = generateNumbers(
+    melodyString,
+    mnemonicWords.length,
+    0,
+    TOTAL_WORDS - 1,
+  );
+  mnemonicWords.forEach((word, i) => {
+    encryptedWords[positions[i]] = encrypt(word, melodyString); // Шифруем каждое слово и кладем вместо существующего на позицию из списка сгенерированных позиций
+  });
+
+  console.log("Кошелек создан. Адрес:", wallet.address);
+
+  return { address: wallet.address, words: encryptedWords };
+}
+
+export async function getWalletFromFile(
+  filename: string,
+  melodyArray: number[],
+) {
+  const words = await getWordsFromFile(filename);
+  const melodyString = generateMelodyString(melodyArray);
+  const positions = generateNumbers(melodyString, 24, 0, TOTAL_WORDS - 1);
+  const mnemonic = positions
+    .reduce<
+      string[]
+    >((acc, position) => [...acc, decrypt(words[position], melodyString)], [])
+    .join(" ");
+
+  const node = ethers.Wallet.fromPhrase(mnemonic);
+  return new Wallet(node.privateKey);
+}
+
+export async function checkWallet(address: string, melodyArray: number[]) {
+  const wallet = await getWalletFromFile(address.substring(-4), melodyArray);
+  return wallet.address === address;
+}
+
+export async function attemptToCheckWallet(
+  walletAddress: string,
+  melodyArray: number[],
+) {
+  melodyArray.length = 0; // Очищаем массив мелодии
+
+  const answerOnFinishCheckMelody = await askQuestion(
+    "Сыграйте ту же мелодию.Нажмите лююбую клавишу по окончанию...",
+  );
+
+  if (answerOnFinishCheckMelody) {
+    const isSuccess = await checkWallet(walletAddress, melodyArray);
+    if (isSuccess) await attemptToCheckWallet(walletAddress, melodyArray);
+  }
+}
 
 export async function sendTransaction(
   wallet: Wallet,
