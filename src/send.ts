@@ -1,5 +1,5 @@
 import midi from "midi";
-import { encryptedWords } from "./words";
+import { encryptedWords } from "../words";
 import { decrypt } from "./utils/crypt";
 import { ethers, JsonRpcProvider } from "ethers";
 import { sendTransaction } from "./utils/wallet";

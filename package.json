@@ -2,8 +2,8 @@
   "name": "crypto-wallet-tx",
   "version": "1.0.0",
   "scripts": {
-    "create": "ts-node create.ts",
-    "start": "ts-node index.ts"
+    "create": "ts-node src/create.ts",
+    "send": "ts-node src/send.ts"
   },
   "author": "",
   "license": "ISC",

@@ -3,7 +3,7 @@ import { writeWordsToFile } from "./utils/files";
 import { askQuestion } from "./utils/io";
 import { attemptToCheckWallet, createWallet } from "./utils/wallet";
 
-async function app() {
+async function create() {
   // Создаем новый объект Input для подключения к MIDI-устройствам
   const input = new midi.Input();
 
@@ -19,7 +19,7 @@ async function app() {
   // Подключение к первому устройству (0 — это индекс порта)
   input.openPort(0);
 
-  console.log("💶 Создание кошелька. Начните играть...");
+  console.log("💶 Начните играть, чтобы создать кошелек...");
   const melodyArray: number[] = [];
 
   input.on("message", (deltaTime, message: number[]) => {
@@ -31,24 +31,19 @@ async function app() {
     melodyArray.push(note);
   });
 
-  const answerOnFinishCreatingMelody = await askQuestion(
-    "Нажмите любую букву и Enter, когда закончите мелодию...",
-  );
+  await askQuestion("Нажмите Enter, когда закончите...");
 
-  let walletAddress: string = "";
-  if (answerOnFinishCreatingMelody) {
-    if (melodyArray.length < 5) {
-      console.log("Мелодия слишком коротка! =(");
-      process.exit(1);
-    }
-
-    const { words, address } = createWallet(melodyArray);
-    await writeWordsToFile(words, address);
-    walletAddress = address;
+  if (melodyArray.length < 5) {
+    console.log("Мелодия слишком коротка!");
+    process.exit(1);
   }
 
+  const { words, address } = createWallet(melodyArray);
+  await writeWordsToFile(words, address);
+  let walletAddress = address;
+
   const answerOnCheckWallet = await askQuestion(
-    "Хотите проверить доступ к кошельку? y/n",
+    "Хотите проверить доступ к кошельку? y/(n)",
   );
 
   if (answerOnCheckWallet.toLowerCase() !== "y") {
@@ -59,4 +54,4 @@ async function app() {
   process.exit();
 }
 
-app();
+create();
