@@ -7,7 +7,7 @@ export async function writeWordsToFile(
   filename: string,
 ) {
   await fs.writeFile(
-    `./networks/${network}/wallets/${filename}.json`,
+    `${process.cwd()}/src/networks/${network}/wallets/${filename}.json`,
     JSON.stringify({ words }, null, 2),
     { flag: "wx", encoding: "utf8" },
   );
@@ -17,7 +17,7 @@ export async function writeWordsToFile(
 
 export async function getWordsFromFile(network: NETWORK, filename: string) {
   const data = await fs.readFile(
-    `./networks/${network}/wallets/${filename}.json`,
+    `${process.cwd()}/src/networks/${network}/wallets/${filename}.json`,
     {
       encoding: "utf8",
     },
@@ -27,6 +27,8 @@ export async function getWordsFromFile(network: NETWORK, filename: string) {
 }
 
 export async function getWalletsFromDir(network: NETWORK) {
-  const files = await fs.readdir(`./networks/${network}/wallets/`);
+  const files = await fs.readdir(
+    `${process.cwd()}/src/networks/${network}/wallets/`,
+  );
   return files.map((f) => f.split(".")[0]);
 }

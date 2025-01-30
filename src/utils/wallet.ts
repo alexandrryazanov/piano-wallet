@@ -78,7 +78,7 @@ export async function getMnemonicFromFile(
     >((acc, position) => [...acc, decrypt(words[position], password)], [])
     .join(" ");
 
-  console.log("Фраза кошелька расшифрована!");
+  console.log("Слова из файла получены...");
 
   return mnemonic;
 }
