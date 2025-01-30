@@ -1,4 +1,5 @@
 import * as readline from "readline";
+import * as process from "node:process";
 
 // Создаем интерфейс для чтения ввода с консоли
 const rl = readline.createInterface({
@@ -23,6 +24,11 @@ export const askChoice = (
   return new Promise((resolve) => {
     console.log(question);
 
+    if (!options.length) {
+      console.log("Нет вариантов для выбора!");
+      process.exit();
+    }
+
     // Отображаем список вариантов
     options.forEach((option, index) => {
       console.log(`${index + 1}. ${option}`);
@@ -41,4 +47,23 @@ export const askChoice = (
       }
     });
   });
+};
+
+export const checkPassword = async ({
+  needConfirm,
+}: {
+  needConfirm: boolean;
+}): Promise<string> => {
+  const password1st = await askQuestion("Введите пароль:");
+
+  if (!needConfirm) return password1st;
+
+  const password2nd = await askQuestion("Введите пароль еще раз:");
+
+  if (password1st !== password2nd) {
+    console.log("Пароли не совпадают! Попробуйте еще раз!");
+    return await checkPassword({ needConfirm });
+  }
+
+  return password2nd;
 };
