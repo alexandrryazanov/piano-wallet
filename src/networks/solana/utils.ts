@@ -14,6 +14,7 @@ import {
   Transaction,
 } from "@solana/web3.js";
 import { NETWORK } from "../../types";
+import { styleText } from "node:util";
 
 const DERIVE_PATH = "m/44'/501'/0'/0'";
 
@@ -67,9 +68,10 @@ export async function sendSOLTransaction(
   solValue: number,
 ) {
   console.log(`Отсылаем ${solValue}SOL на адрес ${to}...`);
+  const senderKeypair = Keypair.fromSecretKey(secretKey);
+  const from = senderKeypair.publicKey.toBase58();
   try {
-    const senderKeypair = Keypair.fromSecretKey(secretKey);
-    const fromPublicKey = new PublicKey(senderKeypair.publicKey.toBase58());
+    const fromPublicKey = new PublicKey(from);
     const toPublicKey = new PublicKey(to);
     const connection = new Connection(
       clusterApiUrl("mainnet-beta"),
@@ -88,6 +90,14 @@ export async function sendSOLTransaction(
     ]);
     console.log(`Транзакция ${signature} отправлена...`);
   } catch (error) {
-    console.error("Ошибка при отправке транзакции:", error);
+    console.error("Ошибка при отправке транзакции");
+    console.error(error);
+    console.log(
+      styleText(
+        ["green"],
+        "Проверьте кошелек в обозревателе. Такое бывает при загруженности сети.",
+      ),
+    );
+    console.log(`https://solscan.io/account/${from}`);
   }
 }
