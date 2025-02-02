@@ -5,6 +5,7 @@ import { generateNumbers } from "./numbers";
 import { getWordsFromFile } from "./files";
 import { listenMelody } from "./midi";
 import { NETWORK } from "../types";
+import { checkPassword } from "./io";
 
 const TOTAL_WORDS = 500;
 export const MNEMONIC_LENGTH = 24;
@@ -86,10 +87,12 @@ export async function getMnemonicFromFile(
 export async function attemptToCheckWallet(
   checkFn: (
     melodyArray: number[],
+    password: string,
   ) => Promise<{ publicKey: string; privateKey: any } | null>,
 ): Promise<{ publicKey: string; privateKey: any }> {
+  const password = await checkPassword({ needConfirm: false });
   const melodyArray = await listenMelody();
-  const wallet = await checkFn(melodyArray);
+  const wallet = await checkFn(melodyArray, password);
   if (!wallet) {
     console.log("Проверка не удалась. Попробуйте еще!");
     return await attemptToCheckWallet(checkFn);

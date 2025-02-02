@@ -22,8 +22,8 @@ async function create() {
   );
 
   if (answerOnCheckWallet.toLowerCase() === "y") {
-    await attemptToCheckWallet((melody) =>
-      checkETHWallet(keypair.publicKey, melody, password),
+    await attemptToCheckWallet((melody, pwd) =>
+      checkETHWallet(keypair.publicKey, melody, pwd),
     );
   }
 }

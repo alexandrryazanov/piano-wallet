@@ -22,8 +22,8 @@ async function create() {
   );
 
   if (answerOnCheckWallet.toLowerCase() === "y") {
-    await attemptToCheckWallet((melody) =>
-      checkSOLWallet(keypair.publicKey, melody, password),
+    await attemptToCheckWallet((melody, pwd) =>
+      checkSOLWallet(keypair.publicKey, melody, pwd),
     );
   }
 }
