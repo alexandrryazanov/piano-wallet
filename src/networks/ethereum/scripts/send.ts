@@ -1,4 +1,4 @@
-import { askChoice, askQuestion, checkPassword } from "../../../utils/io";
+import { askChoice, askQuestion } from "../../../utils/io";
 import { getWalletsFromDir } from "../../../utils/files";
 import { attemptToCheckWallet } from "../../../utils/wallet";
 import { JsonRpcProvider, Wallet } from "ethers";
@@ -16,16 +16,14 @@ async function send() {
   const to = await askQuestion("Введите адрес получателя:");
 
   const value = await askQuestion(
-    "Введите сумму перевода (дробную часть отделите точкой):",
+    "Введите сумму перевода в ETH (дробную часть отделите точкой):",
   );
-
-  const password = await checkPassword({ needConfirm: false });
 
   const provider = new JsonRpcProvider(
     "https://mainnet.infura.io/v3/acef02994c93451fa2e5b39038e2af27",
   );
-  const keypair = await attemptToCheckWallet((melodyArray) =>
-    checkETHWallet(from, melodyArray, password),
+  const keypair = await attemptToCheckWallet((melody, pwd) =>
+    checkETHWallet(from, melody, pwd),
   );
   const wallet = new Wallet(keypair.privateKey, provider);
   const confirmTx = await askQuestion(

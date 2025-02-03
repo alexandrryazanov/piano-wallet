@@ -1,4 +1,4 @@
-import { askChoice, askQuestion, checkPassword } from "../../../utils/io";
+import { askChoice, askQuestion } from "../../../utils/io";
 import { getWalletsFromDir } from "../../../utils/files";
 import { styleText } from "node:util";
 import { NETWORK } from "../../../types";
@@ -15,13 +15,11 @@ async function send() {
   const to = await askQuestion("Введите адрес получателя:");
 
   const value = await askQuestion(
-    "Введите сумму перевода (дробную часть отделите точкой):",
+    "Введите сумму перевода в SOL (дробную часть отделите точкой):",
   );
 
-  const password = await checkPassword({ needConfirm: false });
-
-  const keypair = await attemptToCheckWallet((melodyArray) =>
-    checkSOLWallet(from, melodyArray, password),
+  const keypair = await attemptToCheckWallet((melody, pwd) =>
+    checkSOLWallet(from, melody, pwd),
   );
 
   const confirmTx = await askQuestion(
