@@ -7,7 +7,9 @@ import { checkETHWallet, sendETHTransaction } from "../utils";
 import { NETWORK } from "../../../types";
 
 async function send() {
-  console.log("Вы собираетесь отправить средства!");
+  console.log(
+    `Вы собираетесь отправить средства в сети ${NETWORK.ETHEREUM}! Пока отключите интернет!`,
+  );
   const wallets = await getWalletsFromDir(NETWORK.ETHEREUM);
   const walletNumber = await askChoice("Выберите кошелек:", wallets);
   const from = wallets[walletNumber - 1];
@@ -29,7 +31,7 @@ async function send() {
   const confirmTx = await askQuestion(
     styleText(
       ["yellow"],
-      `Отправить ${value}ETH с кошелька ${from} на ${to}? y/(n)`,
+      `Отправить ${value}ETH с кошелька ${from} на ${to}? Подключитесь к сети, нажмите Y и Enter.`,
     ),
   );
   if (confirmTx.toLowerCase() === "y") {

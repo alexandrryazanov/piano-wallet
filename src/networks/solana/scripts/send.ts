@@ -6,7 +6,9 @@ import { attemptToCheckWallet } from "../../../utils/wallet";
 import { checkSOLWallet, sendSOLTransaction } from "../utils";
 
 async function send() {
-  console.log(`Вы собираетесь отправить средства в сети ${NETWORK.SOLANA}!`);
+  console.log(
+    `Вы собираетесь отправить средства в сети ${NETWORK.SOLANA}! Пока отключите интернет!`,
+  );
   const wallets = await getWalletsFromDir(NETWORK.SOLANA);
   const walletNumber = await askChoice("Выберите кошелек:", wallets);
   const from = wallets[walletNumber - 1];
@@ -25,7 +27,7 @@ async function send() {
   const confirmTx = await askQuestion(
     styleText(
       ["yellow"],
-      `Отправить ${value}SOL с кошелька ${from} на ${to}? y/(n)`,
+      `Отправить ${value}SOL с кошелька ${from} на ${to}? Подключитесь к сети, нажмите Y и Enter.`,
     ),
   );
   if (confirmTx.toLowerCase() === "y") {
